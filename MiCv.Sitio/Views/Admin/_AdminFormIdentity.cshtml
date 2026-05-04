@@ -1,6 +1,9 @@
 @model MiCv.Sitio.Models.Admin.PersonaAdminForm
+@{
+    var ws = ViewBag.WizardStepIndex as int? ?? 0;
+}
 
-<div class="admin-section mb-4">
+<div class="admin-section admin-wizard-step mb-4@(ws == 0 ? " is-active" : "")" data-admin-wizard-step="0" role="group" aria-label="Identidad y perfil">
     <div class="admin-section__body pt-3 pb-3">
         <h2 class="h6 text-uppercase text-muted fw-bold mb-3" style="letter-spacing:.06em;">Identidad y perfil público</h2>
         <div class="row g-3">
@@ -63,3 +66,4 @@
         </div>
     </div>
 </div>
+

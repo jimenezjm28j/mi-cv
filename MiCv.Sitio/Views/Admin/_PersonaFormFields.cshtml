@@ -1,3 +1,74 @@
 @model MiCv.Sitio.Models.Admin.PersonaAdminForm
-<partial name="_AdminFormIdentity" model="Model" />
-<partial name="_AdminFormRepeat" model="Model" />
+@{
+    var isEditMode = Model.Id > 0;
+    var wizardStepRaw = ViewBag.AdminWizardInitialStep;
+    var wizardStep = wizardStepRaw is int wis ? wis : wizardStepRaw is long wil ? (int)wil : 0;
+    if (wizardStep < 0) wizardStep = 0;
+    if (wizardStep > 7) wizardStep = 7;
+    ViewBag.WizardStepIndex = wizardStep;
+}
+
+<input asp-for="Id" type="hidden" />
+
+<div id="adminCvWizard"
+     class="admin-cv-wizard"
+     data-admin-wizard-root
+     data-initial-step="@wizardStep"
+     data-mode="@(isEditMode ? "edit" : "create")"
+     data-step-count="8">
+
+    <ol class="admin-wizard-progress list-unstyled" aria-label="Pasos del asistente">
+        <li class="admin-wizard-progress__step" data-wizard-marker="0"><span class="admin-wizard-progress__dot">1</span><span class="admin-wizard-progress__label">Identidad</span></li>
+        <li class="admin-wizard-progress__step" data-wizard-marker="1"><span class="admin-wizard-progress__dot">2</span><span class="admin-wizard-progress__label">Contacto</span></li>
+        <li class="admin-wizard-progress__step" data-wizard-marker="2"><span class="admin-wizard-progress__dot">3</span><span class="admin-wizard-progress__label">Experiencia</span></li>
+        <li class="admin-wizard-progress__step" data-wizard-marker="3"><span class="admin-wizard-progress__dot">4</span><span class="admin-wizard-progress__label">Formación</span></li>
+        <li class="admin-wizard-progress__step" data-wizard-marker="4"><span class="admin-wizard-progress__dot">5</span><span class="admin-wizard-progress__label">Certif. · cursos</span></li>
+        <li class="admin-wizard-progress__step" data-wizard-marker="5"><span class="admin-wizard-progress__dot">6</span><span class="admin-wizard-progress__label">Proyectos</span></li>
+        <li class="admin-wizard-progress__step" data-wizard-marker="6"><span class="admin-wizard-progress__dot">7</span><span class="admin-wizard-progress__label">Habilidades</span></li>
+        <li class="admin-wizard-progress__step" data-wizard-marker="7"><span class="admin-wizard-progress__dot">8</span><span class="admin-wizard-progress__label">Extra</span></li>
+    </ol>
+
+    <div class="admin-wizard-steps">
+        <partial name="_AdminFormIdentity" model="Model" />
+        <partial name="_AdminFormRepeat" model="Model" />
+    </div>
+</div>
+
+<div class="admin-form-footer mt-4">
+    <div class="d-flex flex-wrap align-items-center gap-3 w-100 justify-content-between mb-2">
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <button type="button" class="btn btn-outline-secondary" data-admin-wizard-prev>Anterior</button>
+            @if (!isEditMode)
+            {
+                <span class="small text-muted d-none d-md-inline">Pasos siguientes puedes omitirlos por ahora; se guarda al avanzar.</span>
+            }
+            <button type="button" class="btn btn-link btn-sm text-secondary px-1" data-admin-wizard-skip>Omitir este paso</button>
+            <span class="small text-success" id="admin-wizard-feedback" aria-live="polite"></span>
+        </div>
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+            <button type="button" class="btn btn-primary" data-admin-wizard-next>Siguiente y guardar</button>
+            @if (isEditMode)
+            {
+                <button type="submit" class="btn btn-primary d-none" data-admin-wizard-final-submit>Guardar cambios</button>
+            }
+            else
+            {
+                <button type="submit" class="btn btn-primary d-none" data-admin-wizard-final-submit>Crear CV</button>
+            }
+        </div>
+    </div>
+    <div class="d-flex flex-wrap gap-2 pt-2 border-top border-light-subtle align-items-center">
+        @if (isEditMode && !string.IsNullOrWhiteSpace(Model.LinkPerfil))
+        {
+            <a class="btn btn-outline-secondary" asp-controller="Cv" asp-action="Index" asp-route-link="@Model.LinkPerfil" target="_blank" rel="noopener noreferrer">Ver público</a>
+        }
+        @if (!isEditMode)
+        {
+            <a class="btn btn-outline-secondary" asp-action="Index">Volver</a>
+        }
+        else
+        {
+            <a class="btn btn-light border" asp-action="Index">Volver al listado</a>
+        }
+    </div>
+</div>

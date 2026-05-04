@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MiCv.Data.Databases;
@@ -53,14 +54,11 @@ public class AdminController(MiCvContext db) : Controller
     {
         var uid = User.GetUsuarioId();
         if (uid is null)
-            return Unauthorized();
+            return UnauthorizedWizardOr401();
 
         PadRepeatableLists(vm);
         if (!ModelState.IsValid)
-        {
-            await LoadLookupsAsync(ct);
-            return View(vm);
-        }
+            return await WizardOrViewBadRequest(CreateWizardAjax(), vm, nameof(Create), ct);
 
         var persona = new Persona
         {
@@ -96,13 +94,22 @@ public class AdminController(MiCvContext db) : Controller
         InsertPersonaChildren(persona.Id, vm);
         await db.SaveChangesAsync(ct);
 
+        if (CreateWizardAjax())
+        {
+            return Json(new
+            {
+                ok = true,
+                redirectUrl = Url.Action(nameof(Edit), new { id = persona.Id, wiz = 1 })!
+            });
+        }
+
         TempData["Msg"] = "CV creado.";
         return RedirectToAction(nameof(Edit), new { id = persona.Id });
     }
 
     [Route("Cv/Editar/{id:int}")]
     [HttpGet]
-    public async Task<IActionResult> Edit(int id, CancellationToken ct)
+    public async Task<IActionResult> Edit(int id, int? wiz, CancellationToken ct)
     {
         var uid = User.GetUsuarioId();
         if (uid is null)
@@ -114,6 +121,7 @@ public class AdminController(MiCvContext db) : Controller
 
         var vm = MapPersonaToForm(persona);
         PadRepeatableLists(vm);
+        ViewBag.AdminWizardInitialStep = wiz.HasValue ? Math.Clamp(wiz.Value, 0, 7) : 0;
         await LoadLookupsAsync(ct);
         return View(vm);
     }
@@ -125,24 +133,26 @@ public class AdminController(MiCvContext db) : Controller
     {
         var uid = User.GetUsuarioId();
         if (uid is null)
-            return Unauthorized();
+            return UnauthorizedWizardOr401();
 
         if (id != vm.Id)
-            return BadRequest();
+            return WizardOrBadRequest(EditWizardAjax());
 
         PadRepeatableLists(vm);
         if (!ModelState.IsValid)
-        {
-            await LoadLookupsAsync(ct);
-            return View(vm);
-        }
+            return await WizardOrViewBadRequest(EditWizardAjax(), vm, nameof(Edit), ct);
 
         var persona = await db.Persona
             .Include(p => p.PerfilProfesional)
             .FirstOrDefaultAsync(p => p.Id == id && p.UsuarioId == uid, ct);
 
         if (persona is null)
+        {
+            if (EditWizardAjax())
+                return new JsonResult(new { ok = false, message = "CV no encontrado." })
+                    { StatusCode = StatusCodes.Status404NotFound };
             return NotFound();
+        }
 
         persona.Nombres = vm.Nombres.Trim();
         persona.Apellidos = vm.Apellidos.Trim();
@@ -173,8 +183,53 @@ public class AdminController(MiCvContext db) : Controller
 
         await db.SaveChangesAsync(ct);
 
+        if (EditWizardAjax())
+            return Json(new { ok = true });
+
         TempData["Msg"] = "Cambios guardados.";
         return RedirectToAction(nameof(Edit), new { id });
+    }
+
+    private bool CreateWizardAjax() =>
+        string.Equals(Request.Headers["X-Admin-Wizard"].ToString(), "1", StringComparison.OrdinalIgnoreCase);
+
+    private bool EditWizardAjax() =>
+        CreateWizardAjax();
+
+    private IActionResult UnauthorizedWizardOr401()
+    {
+        if (CreateWizardAjax())
+            return new JsonResult(new { ok = false, message = "No autorizado." })
+                { StatusCode = StatusCodes.Status401Unauthorized };
+        return Unauthorized();
+    }
+
+    private IActionResult WizardOrBadRequest(bool wizard)
+    {
+        if (!wizard)
+            return BadRequest();
+        return Json(new { ok = false, message = "Petición inconsistente.", errors = Array.Empty<object>() });
+    }
+
+    private static IEnumerable<object> FlatModelErrors(ModelStateDictionary ms) =>
+        ms.Where(kv => kv.Value?.Errors.Count > 0)
+            .SelectMany(kv => kv.Value!.Errors.Select(e =>
+                (object)new
+                {
+                    field = kv.Key,
+                    message = string.IsNullOrEmpty(e.ErrorMessage) ? "Error de validación." : e.ErrorMessage
+                }));
+
+    private async Task<IActionResult> WizardOrViewBadRequest(bool wizard, PersonaAdminForm vm, string viewName, CancellationToken ct)
+    {
+        if (!wizard)
+        {
+            await LoadLookupsAsync(ct);
+            return View(viewName, vm);
+        }
+
+        var errors = FlatModelErrors(ModelState).ToArray();
+        return BadRequest(new { ok = false, errors });
     }
 
     private async Task LoadLookupsAsync(CancellationToken ct)
@@ -196,7 +251,6 @@ public class AdminController(MiCvContext db) : Controller
             .Select(i => new SelectListItem { Value = i.Id.ToString(), Text = i.Nombre })
             .ToList();
     }
-
     private async Task<Persona?> LoadPersonaFullAsync(int id, int usuarioId, CancellationToken ct) =>
         await db.Persona
             .AsSplitQuery()
