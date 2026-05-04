@@ -379,3 +379,16 @@ FodyWeavers.xsd
 /.vs/MiCv.Site.slnx/v18/.suo
 /.vs/MiCv.Site.slnx/v18/DocumentLayout.backup.json
 /.vs/MiCv.Site.slnx/v18/DocumentLayout.json
+/MiCv.Data/bin/Debug/net10.0/MiCv.Data.dll
+/MiCv.Data/bin/Debug/net10.0/MiCv.Data.pdb
+/MiCv.Data/obj/Debug/net10.0/ref/MiCv.Data.dll
+/MiCv.Data/obj/Debug/net10.0/refint/MiCv.Data.dll
+/MiCv.Sitio/bin/Debug/net10.0/MiCv.Data.dll
+/MiCv.Sitio/bin/Debug/net10.0/MiCv.Data.pdb
+/MiCv.Data/obj/Debug/net10.0/MiCv.Data.pdb
+/MiCv.Data/obj/Debug/net10.0/MiCv.Data.GeneratedMSBuildEditorConfig.editorconfig
+/MiCv.Data/obj/Debug/net10.0/MiCv.Data.dll
+/MiCv.Data/obj/Debug/net10.0/MiCv.Data.csproj.FileListAbsolute.txt
+/MiCv.Data/obj/Debug/net10.0/MiCv.Data.AssemblyInfoInputs.cache
+/MiCv.Data/obj/Debug/net10.0/MiCv.Data.AssemblyInfo.cs
+/MiCv.Sitio/obj/Debug/net10.0/MiCv.Sitio.csproj.AssemblyReference.cache

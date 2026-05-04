@@ -58,7 +58,7 @@ public partial class MiCvContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=108.181.157.254,10063;Initial Catalog=MiCv;Persist Security Info=True;User ID=CvUser;Password=!H[q}yGbzGse@bL[t;Encrypt=True");
+        => optionsBuilder.UseSqlServer("");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
