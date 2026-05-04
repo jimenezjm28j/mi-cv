@@ -26,7 +26,6 @@ public class AccountController(MiCvContext db, IWebHostEnvironment env) : Contro
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel vm, CancellationToken ct)
     {
-        var hasssh = PasswordHashing.CreateHash("Jose123$");
         ViewBag.ShowRegister = env.IsDevelopment();
         if (!ModelState.IsValid)
             return View(vm);
