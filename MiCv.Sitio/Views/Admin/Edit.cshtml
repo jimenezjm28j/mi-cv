@@ -1,0 +1,23 @@
+@model MiCv.Sitio.Models.Admin.PersonaAdminForm
+@{
+    ViewData["Title"] = "Editar CV";
+}
+
+<div asp-validation-summary="All" class="mb-3"></div>
+
+<form asp-action="Edit" asp-route-id="@Model.Id" method="post" id="admin-cv-form">
+    <partial name="_PersonaFormFields" model="Model" />
+    <div class="admin-form-footer">
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        @if (!string.IsNullOrWhiteSpace(Model.LinkPerfil))
+        {
+            <a class="btn btn-outline-secondary" asp-controller="Cv" asp-action="Index" asp-route-link="@Model.LinkPerfil" target="_blank" rel="noopener noreferrer">Ver público</a>
+        }
+        <a class="btn btn-light border" asp-action="Index">Volver al listado</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/admin-form.js" asp-append-version="true"></script>
+}

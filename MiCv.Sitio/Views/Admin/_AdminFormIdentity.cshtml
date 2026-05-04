@@ -1,0 +1,65 @@
+@model MiCv.Sitio.Models.Admin.PersonaAdminForm
+
+<div class="admin-section mb-4">
+    <div class="admin-section__body pt-3 pb-3">
+        <h2 class="h6 text-uppercase text-muted fw-bold mb-3" style="letter-spacing:.06em;">Identidad y perfil público</h2>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="Nombres" class="form-label"></label>
+                <input asp-for="Nombres" class="form-control" />
+                <span asp-validation-for="Nombres" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Apellidos" class="form-label"></label>
+                <input asp-for="Apellidos" class="form-control" />
+                <span asp-validation-for="Apellidos" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="TituloProfesional" class="form-label"></label>
+                <input asp-for="TituloProfesional" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="LinkPerfil" class="form-label"></label>
+                <input asp-for="LinkPerfil" class="form-control font-monospace" />
+                <span asp-validation-for="LinkPerfil" class="text-danger small"></span>
+                <div class="form-text">Ruta pública del CV (slug o URL).</div>
+            </div>
+            <div class="col-12">
+                <label asp-for="ResumenCorto" class="form-label"></label>
+                <textarea asp-for="ResumenCorto" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Ciudad" class="form-label"></label>
+                <input asp-for="Ciudad" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Pais" class="form-label"></label>
+                <input asp-for="Pais" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Nacionalidad" class="form-label"></label>
+                <input asp-for="Nacionalidad" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="FechaNacimiento" class="form-label"></label>
+                <input asp-for="FechaNacimiento" class="form-control" type="date" />
+            </div>
+            <div class="col-12">
+                <label asp-for="ResumenProfesional" class="form-label"></label>
+                <textarea asp-for="ResumenProfesional" class="form-control" rows="5"></textarea>
+            </div>
+            <div class="col-12">
+                <label asp-for="ObjetivoProfesional" class="form-label"></label>
+                <textarea asp-for="ObjetivoProfesional" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="col-md-8">
+                <label asp-for="EspecialidadPrincipal" class="form-label"></label>
+                <input asp-for="EspecialidadPrincipal" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="AniosExperiencia" class="form-label"></label>
+                <input asp-for="AniosExperiencia" class="form-control" type="number" step="0.1" min="0" max="80" />
+            </div>
+        </div>
+    </div>
+</div>

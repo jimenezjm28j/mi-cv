@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="MiCv.Data/MiCv.Data.csproj" />
+  <Project Path="MiCv.Sitio/MiCv.Sitio.csproj" />
+</Solution>

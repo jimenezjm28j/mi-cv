@@ -1,0 +1,37 @@
+@model IEnumerable<MiCv.Sitio.Models.Admin.PersonaListaVm>
+@{
+    ViewData["Title"] = "Mis CV";
+}
+
+<div class="d-flex justify-content-end align-items-center mb-4">
+    <a class="btn btn-primary" asp-action="Create">Nuevo CV</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="admin-empty rounded-3 border shadow-sm p-5 text-center">
+        <p class="text-muted mb-3">Aún no tienes CV. Crea el primero para completar tu perfil público.</p>
+        <a class="btn btn-primary" asp-action="Create">Crear CV</a>
+    </div>
+}
+else
+{
+    <div class="admin-cv-grid">
+        @foreach (var p in Model)
+        {
+            <article class="admin-cv-card">
+                <h2 class="admin-cv-card__name">@p.Nombres @p.Apellidos</h2>
+                <p class="admin-cv-card__meta">
+                    Actualizado: @(p.FechaActualizacion?.ToString("yyyy-MM-dd") ?? p.FechaCreacion.ToString("yyyy-MM-dd"))
+                </p>
+                <div class="admin-cv-card__actions">
+                    <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@p.Id">Editar</a>
+                    @if (!string.IsNullOrWhiteSpace(p.LinkPerfil))
+                    {
+                        <a class="btn btn-sm btn-outline-secondary" asp-controller="Cv" asp-action="Index" asp-route-link="@p.LinkPerfil" target="_blank" rel="noopener noreferrer">Ver público</a>
+                    }
+                </div>
+            </article>
+        }
+    </div>
+}

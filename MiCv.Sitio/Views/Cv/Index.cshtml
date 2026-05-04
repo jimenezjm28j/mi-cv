@@ -1,0 +1,471 @@
+@model CvPageViewModel
+@{
+    Layout = "_CvLayout";
+    var P = Model.Persona;
+    ViewData["Title"] = $"{P.Nombres} {P.Apellidos}";
+}
+<div class="cv-theme-bar">
+    <span class="cv-theme-bar__label">Diseño</span>
+@if (Model.PuedeAdministrar)
+{
+    <a class="cv-theme-pill"
+       asp-controller="Admin"
+       asp-action="Edit"
+       asp-route-id="@Model.PersonaId">Editar CV</a>
+}
+    @foreach (CvTema t in Enum.GetValues<CvTema>())
+    {
+        var active = Model.Tema == t;
+        <a class="cv-theme-pill @(active ? "cv-theme-pill--active" : null)"
+           asp-controller="Cv"
+           asp-action="Index"
+           asp-route-link="@Model.LinkSlug"
+           asp-route-tema="@t.CssClass()"
+           aria-current="@(active ? "true" : "false")">@t.Titulo()</a>
+    }
+</div>
+
+<div class="cv cv-theme-@Model.Tema.CssClass()">
+    <div class="cv-shell">
+        <aside class="cv-aside">
+            <div class="cv-hero-card">
+                @if (CvFormat.EsProbableUrlImagen(P.LinkPerfil))
+                {
+                    <img class="cv-photo" src="@P.LinkPerfil" alt="Foto de @P.Nombres @P.Apellidos" loading="lazy" />
+                }
+                else
+                {
+                    <div class="cv-photo cv-photo--placeholder" aria-hidden="true">
+                        <span>@CvFormat.Iniciales(P.Nombres, P.Apellidos)</span>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(P.LinkPerfil))
+                    {
+                        <p class="cv-profile-link-wrap"><a class="cv-link" href="@P.LinkPerfil" target="_blank" rel="noopener noreferrer">Perfil público</a></p>
+                    }
+                }
+                <h1 class="cv-name">@P.Nombres<br /><span class="cv-name__last">@P.Apellidos</span></h1>
+                @if (!string.IsNullOrWhiteSpace(P.TituloProfesional))
+                {
+                    <p class="cv-headline">@P.TituloProfesional</p>
+                }
+                @if (!string.IsNullOrWhiteSpace(P.ResumenCorto))
+                {
+                    <p class="cv-tagline">@P.ResumenCorto</p>
+                }
+            </div>
+
+            @if (CvDisplay.ContactosPublicos(P).Any())
+            {
+                <section class="cv-panel" aria-labelledby="cv-contacto">
+                    <h2 id="cv-contacto" class="cv-panel__title">Contacto</h2>
+                    <ul class="cv-list-plain">
+                        @foreach (var c in CvDisplay.ContactosPublicos(P))
+                        {
+                            <li>
+                                <span class="cv-meta-label">@c.TipoContacto</span>
+                                @if (c.Valor.Contains('@'))
+                                {
+                                    <a class="cv-link" href="mailto:@c.Valor">@c.Valor</a>
+                                }
+                                else if (c.Valor.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <a class="cv-link" href="@c.Valor" target="_blank" rel="noopener noreferrer">@c.Valor</a>
+                                }
+                                else if (c.TipoContacto.Contains("tel", StringComparison.OrdinalIgnoreCase) || c.Valor.All(ch => char.IsDigit(ch) || "+- ()".Contains(ch)))
+                                {
+                                    <a class="cv-link" href="tel:@c.Valor.Replace(" ", "")">@c.Valor</a>
+                                }
+                                else
+                                {
+                                    <span>@c.Valor</span>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </section>
+            }
+
+            @if (CvDisplay.LinksOrdenados(P).Any())
+            {
+                <section class="cv-panel" aria-labelledby="cv-links">
+                    <h2 id="cv-links" class="cv-panel__title">Enlaces</h2>
+                    <ul class="cv-list-plain">
+                        @foreach (var l in CvDisplay.LinksOrdenados(P))
+                        {
+                            <li>
+                                <a class="cv-link" href="@l.Url" target="_blank" rel="noopener noreferrer">@(string.IsNullOrWhiteSpace(l.TextoVisible) ? l.TipoLink : l.TextoVisible)</a>
+                            </li>
+                        }
+                    </ul>
+                </section>
+            }
+
+            @{
+                var ubicacion = CvFormat.UbicacionPersona(P.Ciudad, P.Pais);
+            }
+            @if (!string.IsNullOrWhiteSpace(ubicacion) || P.FechaNacimiento.HasValue || !string.IsNullOrWhiteSpace(P.Nacionalidad))
+            {
+                <section class="cv-panel" aria-labelledby="cv-info">
+                    <h2 id="cv-info" class="cv-panel__title">Información</h2>
+                    <ul class="cv-list-plain">
+                        @if (!string.IsNullOrWhiteSpace(ubicacion))
+                        {
+                            <li><span class="cv-meta-label">Ubicación</span> @ubicacion</li>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(P.Nacionalidad))
+                        {
+                            <li><span class="cv-meta-label">Nacionalidad</span> @P.Nacionalidad</li>
+                        }
+                        @if (P.FechaNacimiento.HasValue)
+                        {
+                            <li><span class="cv-meta-label">Nacimiento</span> @CvFormat.MesAnio(P.FechaNacimiento)</li>
+                        }
+                    </ul>
+                </section>
+            }
+
+            @if (CvDisplay.HabilidadesOrdenadas(P).Any())
+            {
+                <section class="cv-panel" aria-labelledby="cv-skills">
+                    <h2 id="cv-skills" class="cv-panel__title">Habilidades</h2>
+                    <div class="cv-chip-wrap">
+                        @foreach (var h in CvDisplay.HabilidadesOrdenadas(P))
+                        {
+                            <span class="cv-chip" title="@h.Habilidad?.Categoria">
+                                @h.Habilidad?.Nombre
+                                @if (!string.IsNullOrWhiteSpace(h.Nivel))
+                                {
+                                    <span class="cv-chip__sub">@h.Nivel</span>
+                                }
+                            </span>
+                        }
+                    </div>
+                </section>
+            }
+
+            @if (CvDisplay.IdiomasOrdenados(P).Any())
+            {
+                <section class="cv-panel" aria-labelledby="cv-lang">
+                    <h2 id="cv-lang" class="cv-panel__title">Idiomas</h2>
+                    <ul class="cv-list-plain">
+                        @foreach (var i in CvDisplay.IdiomasOrdenados(P))
+                        {
+                            <li>
+                                <strong>@i.Idioma?.Nombre</strong>
+                                @if (!string.IsNullOrWhiteSpace(i.NivelGeneral))
+                                {
+                                    <span class="cv-muted"> — @i.NivelGeneral</span>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </section>
+            }
+        </aside>
+
+        <div class="cv-main">
+            @if (P.PerfilProfesional is { Resumen: var resumen } && !string.IsNullOrWhiteSpace(resumen))
+            {
+                <section class="cv-block cv-block--lead" aria-labelledby="cv-perfil">
+                    <h2 id="cv-perfil" class="cv-block__title">Perfil</h2>
+                    <div class="cv-prose cv-prose--prewrap">@resumen</div>
+                    @if (!string.IsNullOrWhiteSpace(P.PerfilProfesional.EspecialidadPrincipal))
+                    {
+                        <p class="cv-specialty">
+                            <span class="cv-meta-label">Especialidad</span>
+                            @P.PerfilProfesional.EspecialidadPrincipal
+                            @if (P.PerfilProfesional.AniosExperiencia is {} ax)
+                            {
+                                <span class="cv-muted"> · ~@ax.ToString("0.#") años</span>
+                            }
+                        </p>
+                    }
+                    else if (P.PerfilProfesional.AniosExperiencia is {} ax2)
+                    {
+                        <p class="cv-specialty"><span class="cv-meta-label">Experiencia</span> ~@ax2.ToString("0.#") años</p>
+                    }
+                </section>
+            }
+
+            @if (CvDisplay.ExperienciasOrdenadas(P).Any())
+            {
+                <section class="cv-block" aria-labelledby="cv-exp">
+                    <h2 id="cv-exp" class="cv-block__title">Experiencia</h2>
+                    <div class="cv-timeline">
+                        @foreach (var e in CvDisplay.ExperienciasOrdenadas(P))
+                        {
+                            <article class="cv-card">
+                                <header class="cv-card__head">
+                                    <div>
+                                        <h3 class="cv-card__title">@e.Cargo</h3>
+                                        <p class="cv-card__subtitle">@e.Empresa</p>
+                                    </div>
+                                    <time class="cv-card__date" datetime="@e.FechaInicio.ToString("yyyy-MM-dd")">@CvFormat.Rango(e.FechaInicio, e.FechaFin, e.Actualmente)</time>
+                                </header>
+                                @{
+                                    var meta = new List<string>();
+                                    if (!string.IsNullOrWhiteSpace(e.Ubicacion)) meta.Add(e.Ubicacion);
+                                    if (!string.IsNullOrWhiteSpace(e.Modalidad)) meta.Add(e.Modalidad);
+                                    if (!string.IsNullOrWhiteSpace(e.TipoContrato)) meta.Add(e.TipoContrato);
+                                }
+                                @if (meta.Count > 0)
+                                {
+                                    <p class="cv-card__meta">@string.Join(" · ", meta)</p>
+                                }
+                                @if (CvDisplay.ResponsabilidadesOrdenadas(e).Any())
+                                {
+                                    <ul class="cv-bullets">
+                                        @foreach (var r in CvDisplay.ResponsabilidadesOrdenadas(e))
+                                        {
+                                            <li>@r.Descripcion</li>
+                                        }
+                                    </ul>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(e.Descripcion))
+                                {
+                                    <p class="cv-prose cv-prose--sm">@e.Descripcion</p>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(e.Logros))
+                                {
+                                    <p class="cv-prose cv-prose--sm cv-accent-text"><strong>Logros:</strong> @e.Logros</p>
+                                }
+                            </article>
+                        }
+                    </div>
+                </section>
+            }
+
+            @if (CvDisplay.FormacionOrdenada(P).Any())
+            {
+                <section class="cv-block" aria-labelledby="cv-edu">
+                    <h2 id="cv-edu" class="cv-block__title">Formación</h2>
+                    <div class="cv-timeline">
+                        @foreach (var f in CvDisplay.FormacionOrdenada(P))
+                        {
+                            <article class="cv-card">
+                                <header class="cv-card__head">
+                                    <div>
+                                        <h3 class="cv-card__title">@f.Titulo</h3>
+                                        <p class="cv-card__subtitle">@f.Institucion</p>
+                                    </div>
+                                    <time class="cv-card__date">@CvFormat.Rango(f.FechaInicio, f.FechaFin, f.Actualmente)</time>
+                                </header>
+                                @{
+                                    var fm = new List<string>();
+                                    if (!string.IsNullOrWhiteSpace(f.NivelAcademico)) fm.Add(f.NivelAcademico);
+                                    if (!string.IsNullOrWhiteSpace(f.AreaEstudio)) fm.Add(f.AreaEstudio);
+                                    if (!string.IsNullOrWhiteSpace(f.Ubicacion)) fm.Add(f.Ubicacion);
+                                }
+                                @if (fm.Count > 0)
+                                {
+                                    <p class="cv-card__meta">@string.Join(" · ", fm)</p>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(f.Descripcion))
+                                {
+                                    <p class="cv-prose cv-prose--sm">@f.Descripcion</p>
+                                }
+                            </article>
+                        }
+                    </div>
+                </section>
+            }
+
+            @if (CvDisplay.ProyectosOrdenados(P).Any())
+            {
+                <section class="cv-block" aria-labelledby="cv-proy">
+                    <h2 id="cv-proy" class="cv-block__title">Proyectos</h2>
+                    <div class="cv-timeline">
+                        @foreach (var pr in CvDisplay.ProyectosOrdenados(P))
+                        {
+                            <article class="cv-card">
+                                <header class="cv-card__head">
+                                    <div>
+                                        <h3 class="cv-card__title">@pr.Nombre</h3>
+                                        @if (!string.IsNullOrWhiteSpace(pr.Rol))
+                                        {
+                                            <p class="cv-card__subtitle">@pr.Rol</p>
+                                        }
+                                    </div>
+                                    @if (pr.FechaInicio.HasValue || pr.FechaFin.HasValue || pr.Actualmente)
+                                    {
+                                        <time class="cv-card__date">@CvFormat.Rango(pr.FechaInicio, pr.FechaFin, pr.Actualmente)</time>
+                                    }
+                                </header>
+                                @if (!string.IsNullOrWhiteSpace(pr.ClienteEmpresa))
+                                {
+                                    <p class="cv-card__meta">@pr.ClienteEmpresa</p>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(pr.Descripcion))
+                                {
+                                    <p class="cv-prose cv-prose--sm">@pr.Descripcion</p>
+                                }
+                                @if (CvDisplay.ProyectoSkillsOrdenadas(pr).Any())
+                                {
+                                    <div class="cv-chip-wrap cv-chip-wrap--sm">
+                                        @foreach (var ph in CvDisplay.ProyectoSkillsOrdenadas(pr))
+                                        {
+                                            <span class="cv-chip cv-chip--ghost">@ph.Habilidad?.Nombre</span>
+                                        }
+                                    </div>
+                                }
+                                <p class="cv-card__links">
+                                    @if (!string.IsNullOrWhiteSpace(pr.LinkDemo))
+                                    {
+                                        <a class="cv-link" href="@pr.LinkDemo" target="_blank" rel="noopener noreferrer">Demo</a>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(pr.LinkRepositorio))
+                                    {
+                                        <a class="cv-link" href="@pr.LinkRepositorio" target="_blank" rel="noopener noreferrer">Código</a>
+                                    }
+                                </p>
+                            </article>
+                        }
+                    </div>
+                </section>
+            }
+
+            @if (CvDisplay.CertificacionesOrdenadas(P).Any())
+            {
+                <section class="cv-block" aria-labelledby="cv-cert">
+                    <h2 id="cv-cert" class="cv-block__title">Certificaciones</h2>
+                    <ul class="cv-list-cards">
+                        @foreach (var c in CvDisplay.CertificacionesOrdenadas(P))
+                        {
+                            <li class="cv-mini-card">
+                                <strong>@c.Nombre</strong>
+                                <span class="cv-muted">@c.EntidadEmisora</span>
+                                @if (c.FechaEmision.HasValue)
+                                {
+                                    <span class="cv-mini-card__date">@CvFormat.MesAnio(c.FechaEmision)</span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(c.LinkCredencial))
+                                {
+                                    <a class="cv-link" href="@c.LinkCredencial" target="_blank" rel="noopener noreferrer">Ver credencial</a>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </section>
+            }
+
+            @if (CvDisplay.CursosOrdenados(P).Any())
+            {
+                <section class="cv-block" aria-labelledby="cv-cursos">
+                    <h2 id="cv-cursos" class="cv-block__title">Cursos</h2>
+                    <ul class="cv-list-cards">
+                        @foreach (var c in CvDisplay.CursosOrdenados(P))
+                        {
+                            <li class="cv-mini-card">
+                                <strong>@c.Nombre</strong>
+                                @{
+                                    var curMeta = new List<string>();
+                                    if (!string.IsNullOrWhiteSpace(c.Institucion)) curMeta.Add(c.Institucion);
+                                    if (!string.IsNullOrWhiteSpace(c.Plataforma)) curMeta.Add(c.Plataforma);
+                                    if (c.Horas is {} h) curMeta.Add($"{h:g} h");
+                                }
+                                @if (curMeta.Count > 0)
+                                {
+                                    <span class="cv-muted">@string.Join(" · ", curMeta)</span>
+                                }
+                                @if (c.FechaInicio.HasValue || c.FechaFin.HasValue)
+                                {
+                                    <span class="cv-mini-card__date">@CvFormat.Rango(c.FechaInicio, c.FechaFin, false)</span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(c.LinkCertificado))
+                                {
+                                    <a class="cv-link" href="@c.LinkCertificado" target="_blank" rel="noopener noreferrer">Certificado</a>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </section>
+            }
+
+            @if (CvDisplay.PublicacionesOrdenadas(P).Any())
+            {
+                <section class="cv-block" aria-labelledby="cv-pub">
+                    <h2 id="cv-pub" class="cv-block__title">Publicaciones</h2>
+                    <ul class="cv-list-cards">
+                        @foreach (var pub in CvDisplay.PublicacionesOrdenadas(P))
+                        {
+                            <li class="cv-mini-card">
+                                <strong>@pub.Titulo</strong>
+                                @if (!string.IsNullOrWhiteSpace(pub.Medio))
+                                {
+                                    <span class="cv-muted">@pub.Medio</span>
+                                }
+                                @if (pub.FechaPublicacion.HasValue)
+                                {
+                                    <span class="cv-mini-card__date">@CvFormat.MesAnio(pub.FechaPublicacion)</span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(pub.LinkPublicacion))
+                                {
+                                    <a class="cv-link" href="@pub.LinkPublicacion" target="_blank" rel="noopener noreferrer">Enlace</a>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </section>
+            }
+
+            @if (CvDisplay.ReconocimientosOrdenados(P).Any())
+            {
+                <section class="cv-block" aria-labelledby="cv-rec">
+                    <h2 id="cv-rec" class="cv-block__title">Reconocimientos</h2>
+                    <ul class="cv-list-cards">
+                        @foreach (var r in CvDisplay.ReconocimientosOrdenados(P))
+                        {
+                            <li class="cv-mini-card">
+                                <strong>@r.Nombre</strong>
+                                @if (!string.IsNullOrWhiteSpace(r.Entidad))
+                                {
+                                    <span class="cv-muted">@r.Entidad</span>
+                                }
+                                @if (r.Fecha.HasValue)
+                                {
+                                    <span class="cv-mini-card__date">@CvFormat.MesAnio(r.Fecha)</span>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </section>
+            }
+
+            @if (CvDisplay.ReferenciasOrdenadas(P).Any())
+            {
+                <section class="cv-block" aria-labelledby="cv-ref">
+                    <h2 id="cv-ref" class="cv-block__title">Referencias</h2>
+                    <ul class="cv-list-cards">
+                        @foreach (var r in CvDisplay.ReferenciasOrdenadas(P))
+                        {
+                            <li class="cv-mini-card">
+                                <strong>@r.Nombre</strong>
+                                @{
+                                    var rm = new List<string>();
+                                    if (!string.IsNullOrWhiteSpace(r.Cargo)) rm.Add(r.Cargo);
+                                    if (!string.IsNullOrWhiteSpace(r.Empresa)) rm.Add(r.Empresa);
+                                }
+                                @if (rm.Count > 0)
+                                {
+                                    <span class="cv-muted">@string.Join(" · ", rm)</span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(r.Email))
+                                {
+                                    <a class="cv-link" href="mailto:@r.Email">@r.Email</a>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(r.Telefono))
+                                {
+                                    <span>@r.Telefono</span>
+                                }
+                                @if (r.DisponiblePreviaSolicitud)
+                                {
+                                    <span class="cv-muted">Disponible previa solicitud</span>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </section>
+            }
+        </div>
+    </div>
+</div>

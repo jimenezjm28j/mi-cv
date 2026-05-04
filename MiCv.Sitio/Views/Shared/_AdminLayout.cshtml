@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] · Administración</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+</head>
+<body class="admin-body">
+    <div class="admin-app">
+        <aside class="admin-sidebar">
+            <div class="admin-sidebar__brand">
+                <span class="admin-sidebar__logo">MiCv</span>
+                <span class="admin-sidebar__tag">Admin</span>
+            </div>
+            <nav class="admin-nav">
+                <a class="admin-nav__link @(ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "admin-nav__link--active" : null)" asp-controller="Admin" asp-action="Index">
+                    Mis CV
+                </a>
+                <a class="admin-nav__link" asp-controller="Home" asp-action="Index">Ver sitio</a>
+            </nav>
+            <div class="admin-sidebar__footer">
+                <span class="admin-sidebar__user text-truncate d-block small">@User.Identity?.Name</span>
+                <form asp-controller="Account" asp-action="Logout" method="post" class="mt-2">
+                    <button type="submit" class="btn btn-outline-light btn-sm w-100">Salir</button>
+                </form>
+            </div>
+        </aside>
+        <div class="admin-workspace">
+            <header class="admin-workspace__header">
+                <h1 class="admin-workspace__title">@ViewData["Title"]</h1>
+            </header>
+            <main class="admin-workspace__main">
+                @if (TempData["Msg"] is string tm)
+                {
+                    <div class="alert alert-success admin-alert shadow-sm border-0">@tm</div>
+                }
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

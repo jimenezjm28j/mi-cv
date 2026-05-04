@@ -1,0 +1,126 @@
+﻿{
+   "CodeGenerationMode": 6,
+   "ContextClassName": "MiCvContext",
+   "ContextNamespace": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": true,
+   "IrregularWords": null,
+   "MinimumProductVersion": "2.6.1384",
+   "ModelNamespace": null,
+   "OutputContextPath": "Databases\/MiCv\/Context",
+   "OutputPath": "Databases\/MiCv",
+   "PluralRules": null,
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "MiCv.Data",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 2,
+   "SelectedToBeGenerated": 0,
+   "SingularRules": null,
+   "T4TemplatePath": null,
+   "Tables": [
+      {
+         "Name": "[dbo].[Certificacion]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Curso]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[DatoContacto]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ExperienciaLaboral]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ExperienciaResponsabilidad]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[FormacionAcademica]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Habilidad]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Idioma]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PerfilProfesional]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Persona]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PersonaHabilidad]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PersonaIdioma]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PersonaLink]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Proyecto]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ProyectoHabilidad]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Publicacion]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Reconocimiento]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Referencia]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Usuario]",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": null,
+   "UncountableWords": null,
+   "UseAsyncStoredProcedureCalls": true,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDatabaseNamesForRoutines": true,
+   "UseDateOnlyTimeOnly": false,
+   "UseDbContextSplitting": false,
+   "UseDecimalDataAnnotationForSprocResult": true,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": false,
+   "UseInternalAccessModifiersForSprocsAndFunctions": false,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UsePrefixNavigationNaming": false,
+   "UseSchemaFolders": true,
+   "UseSchemaNamespaces": false,
+   "UseSpatial": false,
+   "UseT4": false,
+   "UseT4Split": false,
+   "UseTypedTvpParameters": true
+}

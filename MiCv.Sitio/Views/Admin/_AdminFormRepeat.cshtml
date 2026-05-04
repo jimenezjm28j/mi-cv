@@ -1,0 +1,468 @@
+@model MiCv.Sitio.Models.Admin.PersonaAdminForm
+@{
+    var habList = ViewBag.HabilidadesList as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
+    var idiList = ViewBag.IdiomasList as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
+}
+
+<div class="accordion mb-4" id="adminCvAccordion">
+    <div class="accordion-item admin-section border-0 shadow-sm mb-2 rounded overflow-hidden">
+        <h2 class="accordion-header admin-section__header">
+            <button class="accordion-button admin-section__btn" type="button" data-bs-toggle="collapse" data-bs-target="#admPanelContacto" aria-expanded="true">
+                Contacto y enlaces
+                <span class="admin-section__chev">▼</span>
+            </button>
+        </h2>
+        <div id="admPanelContacto" class="accordion-collapse collapse show" data-bs-parent="#adminCvAccordion">
+            <div class="accordion-body admin-section__body">
+                <p class="admin-section__hint">Filas vacías no se guardan. Marca «Principal» / «Público» en contactos según corresponda.</p>
+                <h3 class="small fw-bold text-uppercase text-muted mb-2">Datos de contacto</h3>
+                <div class="admin-table-wrap mb-4">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Valor</th>
+                                <th>Principal</th>
+                                <th>Público</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-contactos" data-prefix="Contactos">
+                        @for (var i = 0; i < Model.Contactos.Count; i++)
+                        {
+                            <tr>
+                                <td><input asp-for="Contactos[i].TipoContacto" class="form-control form-control-sm" placeholder="Email, Tel…" /></td>
+                                <td style="min-width:220px"><input asp-for="Contactos[i].Valor" class="form-control form-control-sm" /></td>
+                                <td class="text-center"><input asp-for="Contactos[i].EsPrincipal" class="form-check-input" /></td>
+                                <td class="text-center"><input asp-for="Contactos[i].EsPublico" class="form-check-input" /></td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary admin-row-actions" data-admin-add="#tbody-contactos">+ Añadir contacto</button>
+
+                <h3 class="small fw-bold text-uppercase text-muted mb-2 mt-4">Enlaces</h3>
+                <div class="admin-table-wrap mb-2">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>URL</th>
+                                <th>Texto</th>
+                                <th>Principal</th>
+                                <th>Orden</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-links" data-prefix="Links">
+                        @for (var i = 0; i < Model.Links.Count; i++)
+                        {
+                            <tr>
+                                <td><input asp-for="Links[i].TipoLink" class="form-control form-control-sm" placeholder="LinkedIn…" /></td>
+                                <td style="min-width:200px"><input asp-for="Links[i].Url" class="form-control form-control-sm" /></td>
+                                <td><input asp-for="Links[i].TextoVisible" class="form-control form-control-sm" /></td>
+                                <td class="text-center"><input asp-for="Links[i].EsPrincipal" class="form-check-input" /></td>
+                                <td style="width:70px"><input asp-for="Links[i].Orden" class="form-control form-control-sm" type="number" /></td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary admin-row-actions" data-admin-add="#tbody-links">+ Añadir enlace</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion-item admin-section border-0 shadow-sm mb-2 rounded overflow-hidden">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed admin-section__btn" type="button" data-bs-toggle="collapse" data-bs-target="#admPanelExp">
+                Experiencia laboral
+                <span class="admin-section__chev">▼</span>
+            </button>
+        </h2>
+        <div id="admPanelExp" class="accordion-collapse collapse" data-bs-parent="#adminCvAccordion">
+            <div class="accordion-body admin-section__body">
+                <p class="admin-section__hint">Requiere empresa y cargo. Responsabilidades: una línea por viñeta.</p>
+                <div class="admin-table-wrap">
+                    <table class="table table-sm align-middle">
+                        <tbody id="tbody-exp" data-prefix="Experiencias">
+                        @for (var i = 0; i < Model.Experiencias.Count; i++)
+                        {
+                            <tr class="align-top">
+                                <td colspan="6" class="bg-light p-3 border-bottom">
+                                    <div class="row g-2">
+                                        <div class="col-md-4">
+                                            <label class="form-label small mb-0">Empresa</label>
+                                            <input asp-for="Experiencias[i].Empresa" class="form-control form-control-sm" />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small mb-0">Cargo</label>
+                                            <input asp-for="Experiencias[i].Cargo" class="form-control form-control-sm" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label small mb-0">Inicio</label>
+                                            <input asp-for="Experiencias[i].FechaInicio" class="form-control form-control-sm" type="date" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label small mb-0">Fin</label>
+                                            <input asp-for="Experiencias[i].FechaFin" class="form-control form-control-sm" type="date" />
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-end pb-1">
+                                            <div class="form-check">
+                                                <input asp-for="Experiencias[i].Actualmente" class="form-check-input" />
+                                                <label class="form-check-label small" asp-for="Experiencias[i].Actualmente"></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label small mb-0">Orden</label>
+                                            <input asp-for="Experiencias[i].Orden" class="form-control form-control-sm" type="number" />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small mb-0">Ubicación</label>
+                                            <input asp-for="Experiencias[i].Ubicacion" class="form-control form-control-sm" />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small mb-0">Modalidad</label>
+                                            <input asp-for="Experiencias[i].Modalidad" class="form-control form-control-sm" />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small mb-0">Contrato</label>
+                                            <input asp-for="Experiencias[i].TipoContrato" class="form-control form-control-sm" />
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label small mb-0">Descripción</label>
+                                            <textarea asp-for="Experiencias[i].Descripcion" class="form-control form-control-sm" rows="2"></textarea>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label small mb-0">Logros</label>
+                                            <textarea asp-for="Experiencias[i].Logros" class="form-control form-control-sm" rows="2"></textarea>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label small mb-0">Responsabilidades (una por línea)</label>
+                                            <textarea asp-for="Experiencias[i].ResponsabilidadesLineas" class="form-control form-control-sm font-monospace" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary admin-row-actions" data-admin-add="#tbody-exp">+ Añadir experiencia</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion-item admin-section border-0 shadow-sm mb-2 rounded overflow-hidden">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed admin-section__btn" type="button" data-bs-toggle="collapse" data-bs-target="#admPanelForm">
+                Formación académica
+                <span class="admin-section__chev">▼</span>
+            </button>
+        </h2>
+        <div id="admPanelForm" class="accordion-collapse collapse" data-bs-parent="#adminCvAccordion">
+            <div class="accordion-body admin-section__body">
+                <p class="admin-section__hint">Requiere institución y título.</p>
+                <div class="admin-table-wrap">
+                    <table class="table table-sm">
+                        <tbody id="tbody-form" data-prefix="Formaciones">
+                        @for (var i = 0; i < Model.Formaciones.Count; i++)
+                        {
+                            <tr class="align-top">
+                                <td colspan="6" class="bg-light p-3 border-bottom">
+                                    <div class="row g-2">
+                                        <div class="col-md-6"><label class="form-label small mb-0">Institución</label><input asp-for="Formaciones[i].Institucion" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-6"><label class="form-label small mb-0">Título</label><input asp-for="Formaciones[i].Titulo" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-4"><label class="form-label small mb-0">Área</label><input asp-for="Formaciones[i].AreaEstudio" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-4"><label class="form-label small mb-0">Nivel</label><input asp-for="Formaciones[i].NivelAcademico" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-4"><label class="form-label small mb-0">Ubicación</label><input asp-for="Formaciones[i].Ubicacion" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-2"><label class="form-label small mb-0">Inicio</label><input asp-for="Formaciones[i].FechaInicio" type="date" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-2"><label class="form-label small mb-0">Fin</label><input asp-for="Formaciones[i].FechaFin" type="date" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-2 d-flex align-items-end pb-1"><div class="form-check"><input asp-for="Formaciones[i].Actualmente" class="form-check-input" /><label class="form-check-label small" asp-for="Formaciones[i].Actualmente"></label></div></div>
+                                        <div class="col-md-2"><label class="form-label small mb-0">Orden</label><input asp-for="Formaciones[i].Orden" type="number" class="form-control form-control-sm" /></div>
+                                        <div class="col-12"><label class="form-label small mb-0">Descripción</label><textarea asp-for="Formaciones[i].Descripcion" class="form-control form-control-sm" rows="2"></textarea></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary admin-row-actions" data-admin-add="#tbody-form">+ Añadir formación</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion-item admin-section border-0 shadow-sm mb-2 rounded overflow-hidden">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed admin-section__btn" type="button" data-bs-toggle="collapse" data-bs-target="#admPanelCert">
+                Certificaciones y cursos
+                <span class="admin-section__chev">▼</span>
+            </button>
+        </h2>
+        <div id="admPanelCert" class="accordion-collapse collapse" data-bs-parent="#adminCvAccordion">
+            <div class="accordion-body admin-section__body">
+                <h3 class="small fw-bold text-muted text-uppercase">Certificaciones</h3>
+                <p class="admin-section__hint">Nombre y entidad obligatorios.</p>
+                <div class="admin-table-wrap mb-4">
+                    <table class="table table-sm">
+                        <tbody id="tbody-cert" data-prefix="Certificaciones">
+                        @for (var i = 0; i < Model.Certificaciones.Count; i++)
+                        {
+                            <tr class="align-top">
+                                <td colspan="5" class="bg-light p-3 border-bottom">
+                                    <div class="row g-2">
+                                        <div class="col-md-6"><label class="form-label small mb-0">Nombre</label><input asp-for="Certificaciones[i].Nombre" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-6"><label class="form-label small mb-0">Entidad</label><input asp-for="Certificaciones[i].EntidadEmisora" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-3"><label class="form-label small mb-0">Emisión</label><input asp-for="Certificaciones[i].FechaEmision" type="date" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-3"><label class="form-label small mb-0">Expira</label><input asp-for="Certificaciones[i].FechaExpiracion" type="date" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-3"><label class="form-label small mb-0">Código</label><input asp-for="Certificaciones[i].CodigoCredencial" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-3"><label class="form-label small mb-0">Orden</label><input asp-for="Certificaciones[i].Orden" type="number" class="form-control form-control-sm" /></div>
+                                        <div class="col-12"><label class="form-label small mb-0">Link credencial</label><input asp-for="Certificaciones[i].LinkCredencial" class="form-control form-control-sm" /></div>
+                                        <div class="col-12"><label class="form-label small mb-0">Descripción</label><textarea asp-for="Certificaciones[i].Descripcion" class="form-control form-control-sm" rows="2"></textarea></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary mb-4" data-admin-add="#tbody-cert">+ Certificación</button>
+
+                <h3 class="small fw-bold text-muted text-uppercase">Cursos</h3>
+                <div class="admin-table-wrap">
+                    <table class="table table-sm">
+                        <tbody id="tbody-curso" data-prefix="Cursos">
+                        @for (var i = 0; i < Model.Cursos.Count; i++)
+                        {
+                            <tr class="align-top">
+                                <td colspan="5" class="bg-light p-3 border-bottom">
+                                    <div class="row g-2">
+                                        <div class="col-md-6"><label class="form-label small mb-0">Nombre</label><input asp-for="Cursos[i].Nombre" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-3"><label class="form-label small mb-0">Institución</label><input asp-for="Cursos[i].Institucion" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-3"><label class="form-label small mb-0">Plataforma</label><input asp-for="Cursos[i].Plataforma" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-2"><label class="form-label small mb-0">Inicio</label><input asp-for="Cursos[i].FechaInicio" type="date" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-2"><label class="form-label small mb-0">Fin</label><input asp-for="Cursos[i].FechaFin" type="date" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-2"><label class="form-label small mb-0">Horas</label><input asp-for="Cursos[i].Horas" type="number" step="0.01" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-2"><label class="form-label small mb-0">Orden</label><input asp-for="Cursos[i].Orden" type="number" class="form-control form-control-sm" /></div>
+                                        <div class="col-12"><label class="form-label small mb-0">Link certificado</label><input asp-for="Cursos[i].LinkCertificado" class="form-control form-control-sm" /></div>
+                                        <div class="col-12"><label class="form-label small mb-0">Descripción</label><textarea asp-for="Cursos[i].Descripcion" class="form-control form-control-sm" rows="2"></textarea></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary admin-row-actions" data-admin-add="#tbody-curso">+ Curso</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion-item admin-section border-0 shadow-sm mb-2 rounded overflow-hidden">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed admin-section__btn" type="button" data-bs-toggle="collapse" data-bs-target="#admPanelProy">
+                Proyectos
+                <span class="admin-section__chev">▼</span>
+            </button>
+        </h2>
+        <div id="admPanelProy" class="accordion-collapse collapse" data-bs-parent="#adminCvAccordion">
+            <div class="accordion-body admin-section__body">
+                <div class="admin-table-wrap">
+                    <table class="table table-sm">
+                        <tbody id="tbody-proy" data-prefix="Proyectos">
+                        @for (var i = 0; i < Model.Proyectos.Count; i++)
+                        {
+                            <tr class="align-top">
+                                <td colspan="5" class="bg-light p-3 border-bottom">
+                                    <div class="row g-2">
+                                        <div class="col-md-6"><label class="form-label small mb-0">Nombre</label><input asp-for="Proyectos[i].Nombre" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-3"><label class="form-label small mb-0">Rol</label><input asp-for="Proyectos[i].Rol" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-3"><label class="form-label small mb-0">Cliente</label><input asp-for="Proyectos[i].ClienteEmpresa" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-2"><label class="form-label small mb-0">Inicio</label><input asp-for="Proyectos[i].FechaInicio" type="date" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-2"><label class="form-label small mb-0">Fin</label><input asp-for="Proyectos[i].FechaFin" type="date" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-2"><div class="form-check mt-4"><input asp-for="Proyectos[i].Actualmente" class="form-check-input" /><label class="form-check-label small" asp-for="Proyectos[i].Actualmente"></label></div></div>
+                                        <div class="col-md-2"><label class="form-label small mb-0">Orden</label><input asp-for="Proyectos[i].Orden" type="number" class="form-control form-control-sm" /></div>
+                                        <div class="col-12"><label class="form-label small mb-0">Descripción</label><textarea asp-for="Proyectos[i].Descripcion" class="form-control form-control-sm" rows="2"></textarea></div>
+                                        <div class="col-md-6"><label class="form-label small mb-0">Repo</label><input asp-for="Proyectos[i].LinkRepositorio" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-6"><label class="form-label small mb-0">Demo</label><input asp-for="Proyectos[i].LinkDemo" class="form-control form-control-sm" /></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary admin-row-actions" data-admin-add="#tbody-proy">+ Proyecto</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion-item admin-section border-0 shadow-sm mb-2 rounded overflow-hidden">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed admin-section__btn" type="button" data-bs-toggle="collapse" data-bs-target="#admPanelSkills">
+                Habilidades e idiomas
+                <span class="admin-section__chev">▼</span>
+            </button>
+        </h2>
+        <div id="admPanelSkills" class="accordion-collapse collapse" data-bs-parent="#adminCvAccordion">
+            <div class="accordion-body admin-section__body">
+                <h3 class="small fw-bold text-muted text-uppercase">Habilidades</h3>
+                <p class="admin-section__hint">Elige del catálogo. Valor 0 = ignorar fila.</p>
+                <div class="admin-table-wrap mb-4">
+                    <table class="table table-sm">
+                        <thead><tr><th>Habilidad</th><th>Nivel</th><th>Años exp.</th><th>Principal</th><th>Orden</th></tr></thead>
+                        <tbody id="tbody-hab" data-prefix="Habilidades">
+                        @for (var i = 0; i < Model.Habilidades.Count; i++)
+                        {
+                            <tr>
+                                <td style="min-width:220px">
+                                    <select asp-for="Habilidades[i].HabilidadId" class="form-select form-select-sm">
+                                        <option value="0">—</option>
+                                        @foreach (var opt in habList)
+                                        {
+                                            var sel = Model.Habilidades[i].HabilidadId.ToString() == opt.Value;
+                                            if (sel)
+                                            {
+                                                <option value="@opt.Value" selected>@opt.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@opt.Value">@opt.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td><input asp-for="Habilidades[i].Nivel" class="form-control form-control-sm" /></td>
+                                <td style="width:90px"><input asp-for="Habilidades[i].AniosExperiencia" type="number" step="0.1" class="form-control form-control-sm" /></td>
+                                <td class="text-center"><input asp-for="Habilidades[i].EsPrincipal" class="form-check-input" /></td>
+                                <td style="width:70px"><input asp-for="Habilidades[i].Orden" type="number" class="form-control form-control-sm" /></td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary mb-4" data-admin-add="#tbody-hab">+ Habilidad</button>
+
+                <h3 class="small fw-bold text-muted text-uppercase">Idiomas</h3>
+                <div class="admin-table-wrap">
+                    <table class="table table-sm">
+                        <thead><tr><th>Idioma</th><th>General</th><th>Lee</th><th>Escribe</th><th>Habla</th><th>Certif.</th><th>Orden</th></tr></thead>
+                        <tbody id="tbody-idi" data-prefix="Idiomas">
+                        @for (var i = 0; i < Model.Idiomas.Count; i++)
+                        {
+                            <tr>
+                                <td style="min-width:160px">
+                                    <select asp-for="Idiomas[i].IdiomaId" class="form-select form-select-sm">
+                                        <option value="0">—</option>
+                                        @foreach (var opt in idiList)
+                                        {
+                                            var sel = Model.Idiomas[i].IdiomaId.ToString() == opt.Value;
+                                            if (sel)
+                                            {
+                                                <option value="@opt.Value" selected>@opt.Text</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@opt.Value">@opt.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                </td>
+                                <td><input asp-for="Idiomas[i].NivelGeneral" class="form-control form-control-sm" /></td>
+                                <td><input asp-for="Idiomas[i].NivelLectura" class="form-control form-control-sm" /></td>
+                                <td><input asp-for="Idiomas[i].NivelEscritura" class="form-control form-control-sm" /></td>
+                                <td><input asp-for="Idiomas[i].NivelConversacion" class="form-control form-control-sm" /></td>
+                                <td><input asp-for="Idiomas[i].Certificacion" class="form-control form-control-sm" /></td>
+                                <td style="width:70px"><input asp-for="Idiomas[i].Orden" type="number" class="form-control form-control-sm" /></td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary admin-row-actions" data-admin-add="#tbody-idi">+ Idioma</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="accordion-item admin-section border-0 shadow-sm mb-2 rounded overflow-hidden">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed admin-section__btn" type="button" data-bs-toggle="collapse" data-bs-target="#admPanelExtra">
+                Publicaciones, reconocimientos y referencias
+                <span class="admin-section__chev">▼</span>
+            </button>
+        </h2>
+        <div id="admPanelExtra" class="accordion-collapse collapse" data-bs-parent="#adminCvAccordion">
+            <div class="accordion-body admin-section__body">
+                <h3 class="small fw-bold text-muted text-uppercase">Publicaciones</h3>
+                <div class="admin-table-wrap mb-3">
+                    <table class="table table-sm">
+                        <tbody id="tbody-pub" data-prefix="Publicaciones">
+                        @for (var i = 0; i < Model.Publicaciones.Count; i++)
+                        {
+                            <tr class="align-top">
+                                <td colspan="4" class="bg-light p-3 border-bottom">
+                                    <div class="row g-2">
+                                        <div class="col-md-6"><label class="form-label small mb-0">Título</label><input asp-for="Publicaciones[i].Titulo" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-4"><label class="form-label small mb-0">Medio</label><input asp-for="Publicaciones[i].Medio" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-2"><label class="form-label small mb-0">Fecha</label><input asp-for="Publicaciones[i].FechaPublicacion" type="date" class="form-control form-control-sm" /></div>
+                                        <div class="col-12"><label class="form-label small mb-0">Enlace</label><input asp-for="Publicaciones[i].LinkPublicacion" class="form-control form-control-sm" /></div>
+                                        <div class="col-12"><label class="form-label small mb-0">Descripción</label><textarea asp-for="Publicaciones[i].Descripcion" class="form-control form-control-sm" rows="2"></textarea></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary mb-4" data-admin-add="#tbody-pub">+ Publicación</button>
+
+                <h3 class="small fw-bold text-muted text-uppercase">Reconocimientos</h3>
+                <div class="admin-table-wrap mb-3">
+                    <table class="table table-sm">
+                        <tbody id="tbody-rec" data-prefix="Reconocimientos">
+                        @for (var i = 0; i < Model.Reconocimientos.Count; i++)
+                        {
+                            <tr class="align-top">
+                                <td colspan="4" class="bg-light p-3 border-bottom">
+                                    <div class="row g-2">
+                                        <div class="col-md-6"><label class="form-label small mb-0">Nombre</label><input asp-for="Reconocimientos[i].Nombre" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-4"><label class="form-label small mb-0">Entidad</label><input asp-for="Reconocimientos[i].Entidad" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-2"><label class="form-label small mb-0">Fecha</label><input asp-for="Reconocimientos[i].Fecha" type="date" class="form-control form-control-sm" /></div>
+                                        <div class="col-12"><label class="form-label small mb-0">Descripción</label><textarea asp-for="Reconocimientos[i].Descripcion" class="form-control form-control-sm" rows="2"></textarea></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary mb-4" data-admin-add="#tbody-rec">+ Reconocimiento</button>
+
+                <h3 class="small fw-bold text-muted text-uppercase">Referencias</h3>
+                <div class="admin-table-wrap">
+                    <table class="table table-sm">
+                        <tbody id="tbody-ref" data-prefix="Referencias">
+                        @for (var i = 0; i < Model.Referencias.Count; i++)
+                        {
+                            <tr class="align-top">
+                                <td colspan="4" class="bg-light p-3 border-bottom">
+                                    <div class="row g-2">
+                                        <div class="col-md-4"><label class="form-label small mb-0">Nombre</label><input asp-for="Referencias[i].Nombre" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-4"><label class="form-label small mb-0">Cargo</label><input asp-for="Referencias[i].Cargo" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-4"><label class="form-label small mb-0">Empresa</label><input asp-for="Referencias[i].Empresa" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-4"><label class="form-label small mb-0">Email</label><input asp-for="Referencias[i].Email" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-3"><label class="form-label small mb-0">Teléfono</label><input asp-for="Referencias[i].Telefono" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-3"><label class="form-label small mb-0">Relación</label><input asp-for="Referencias[i].Relacion" class="form-control form-control-sm" /></div>
+                                        <div class="col-md-2"><div class="form-check mt-4"><input asp-for="Referencias[i].DisponiblePreviaSolicitud" class="form-check-input" /><label class="form-check-label small" asp-for="Referencias[i].DisponiblePreviaSolicitud"></label></div></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary admin-row-actions" data-admin-add="#tbody-ref">+ Referencia</button>
+            </div>
+        </div>
+    </div>
+</div>
