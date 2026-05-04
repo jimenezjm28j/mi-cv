@@ -316,13 +316,8 @@
 .cv-card__links {
     margin: 0.65rem 0 0;
     display: flex;
+    flex-wrap: wrap;
     gap: 0.85rem;
-}
-
-.cv-card__links {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
 }
 
 .cv-card {
@@ -381,6 +376,55 @@
 
 .cv-bullets li + li {
     margin-top: 0.35rem;
+}
+
+/* Dentro de un .cv-block: una sola “tarjeta” exterior; entradas como filas con separador */
+.cv-block .cv-timeline {
+    gap: 0;
+}
+
+.cv-block .cv-timeline > .cv-card {
+    padding: 1rem 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.cv-block .cv-timeline > .cv-card:not(:first-child) {
+    border-top: 1px solid var(--cv-block-head-border);
+}
+
+.cv-block .cv-timeline > .cv-card:first-child {
+    padding-top: 0;
+}
+
+.cv-block .cv-timeline > .cv-card:last-child {
+    padding-bottom: 0;
+}
+
+.cv-block .cv-list-cards {
+    gap: 0;
+}
+
+.cv-block .cv-list-cards > .cv-mini-card {
+    margin: 0;
+    padding: 1rem 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+}
+
+.cv-block .cv-list-cards > .cv-mini-card:not(:first-child) {
+    border-top: 1px solid var(--cv-block-head-border);
+}
+
+.cv-block .cv-list-cards > .cv-mini-card:first-child {
+    padding-top: 0;
+}
+
+.cv-block .cv-list-cards > .cv-mini-card:last-child {
+    padding-bottom: 0;
 }
 
 /* =============================================================================
@@ -633,6 +677,11 @@ body.cv-body:has(.cv.cv-theme-aurora) {
 
 .cv.cv-theme-aurora .cv-card {
     backdrop-filter: blur(8px);
+}
+
+.cv.cv-theme-aurora .cv-block .cv-timeline > .cv-card,
+.cv.cv-theme-aurora .cv-block .cv-list-cards > .cv-mini-card {
+    backdrop-filter: none;
 }
 
 /* =============================================================================
